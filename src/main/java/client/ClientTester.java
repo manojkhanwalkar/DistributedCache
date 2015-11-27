@@ -12,7 +12,8 @@ public class ClientTester {
 
     public static void main(String[] args) {
 
-        DCClient client = DCClient.getInstance("localhost:100001,localhost:1002,localhost:1003");
+     //   DCClient client = DCClient.getInstance("localhost:100001,localhost:1002,localhost:1003");
+        DCClient client = DCClient.getInstance("localhost:10003");
 
         for (int i=0;i<10;i++)
         {
