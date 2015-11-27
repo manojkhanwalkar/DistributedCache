@@ -5,5 +5,5 @@ package data;
  */
 public enum Type {
 
-    Query,Uodate,QueryResult,UpdateResult
+    Query,Update,QueryResult,UpdateResult
 }

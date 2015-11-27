@@ -14,13 +14,16 @@ public class ClientTester {
 
         DCClient client = DCClient.getInstance("localhost:100001,localhost:1002,localhost:1003");
 
-        Request request = new Request();
-        request.setKey("Hello");
-        request.setValue("World");
-        request.setType(Type.Uodate);
+        for (int i=0;i<10;i++)
+        {
+            Request request = new Request();
+            request.setKey("Hello"+i);
+            request.setValue("World");
+            request.setType(Type.Update);
 
-        Response response = client.update(request);
+            Response response = client.update(request);
 
-        System.out.println(JSONUtil.getJSONString(response));
+            System.out.println(JSONUtil.getJSONString(response));
+        }
     }
 }

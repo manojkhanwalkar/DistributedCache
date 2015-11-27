@@ -5,6 +5,10 @@ import data.Request;
 import data.Response;
 import data.Type;
 
+import javax.xml.soap.Node;
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by mkhanwalkar on 11/26/15.
  */
@@ -17,15 +21,10 @@ public class DCClient {
 
     public Response update(Request request)
     {
+        int node = Math.abs(request.getKey().hashCode()%clusterSize);
+        NodeClient client = clients.get(node);
+        return client.update(request);
 
-        System.out.println(JSONUtil.getJSONString(request));
-        Response response = new Response();
-        response.setType(Type.UpdateResult);
-        response.setRequestId(request.getId());
-        response.setKey(request.getKey());
-        response.setValue(request.getValue());
-
-        return response ;
     }
 
     public Response query(Request request)
@@ -36,9 +35,17 @@ public class DCClient {
 
     private String config ;
 
+    int clusterSize = -1 ;
+    List<NodeClient> clients = new ArrayList<>();
+
     private void init(String config)
     {
+        //"localhost:100001,localhost:1002,localhost:1003"
 
+        String[] tmp = config.split(",");
+        clusterSize = tmp.length;
+        for (String s : tmp)
+            clients.add(new NodeClient(s));
     }
 
     static class Holder
