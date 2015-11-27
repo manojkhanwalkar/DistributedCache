@@ -10,7 +10,7 @@
     <bean id="ServiceList" class="server.ServiceList">
         <property name="listServices">
             <list>
-            <!--    <ref bean="RestService" /> -->
+                <ref bean="ClientListenerService" />
             </list>
         </property>
 
@@ -19,11 +19,10 @@
 
 
 
-  <!--  <bean id="RestService" class="flow.app1.App1Service">
+    <bean id="RestService" class="cacheserver.ClientListenerService">
         <property name="name" value="RestService" />
-        <property name="restConfigName" value="/Users/mkhanwalkar/RestNMemMapSample/src/main/java/config/app1.yml" />
 
-    </bean> -->
+    </bean>
 
 
 </beans>
