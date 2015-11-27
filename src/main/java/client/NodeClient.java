@@ -19,26 +19,23 @@ public class NodeClient {
     public Response update(Request request)
     {
 
-        Response response = null;
+            String answer = sendNRecv(JSONUtil.getJSONString(request));
+            Response response = JSONUtil.getResponseFromJSONString(answer);
+           return response ;
+    }
+
+    private synchronized String sendNRecv(String s)
+    {
         try {
-            System.out.println(JSONUtil.getJSONString(request));
-            response = new Response();
-            response.setType(Type.UpdateResult);
-            response.setRequestId(request.getId());
-            response.setKey(request.getKey());
-            response.setValue(request.getValue());
-
-            out.println(JSONUtil.getJSONString(request));
-
-            String answer = input.readLine();
-
-            System.out.println(answer);
+            out.println(s);
+            return input.readLine();
         } catch (IOException e) {
             e.printStackTrace();
+            return null;
         }
 
 
-        return response ;
+
     }
 
     public Response query(Request request)

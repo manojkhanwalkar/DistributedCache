@@ -21,7 +21,7 @@
 
     <bean id="ClientListenerService" class="cacheserver.ClientListenerService">
         <property name="name" value="RestService" />
-        <property name="port" value="10003" />
+        <property name="port" value="10004" />
 
     </bean>
 

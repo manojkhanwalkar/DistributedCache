@@ -10,10 +10,10 @@ import data.Type;
  */
 public class ClientTester {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
 
      //   DCClient client = DCClient.getInstance("localhost:100001,localhost:1002,localhost:1003");
-        DCClient client = DCClient.getInstance("localhost:10003");
+        DCClient client = DCClient.getInstance("localhost:10003,localhost:10004");
 
         for (int i=0;i<10;i++)
         {
@@ -25,6 +25,8 @@ public class ClientTester {
             Response response = client.update(request);
 
             System.out.println(JSONUtil.getJSONString(response));
+
+            Thread.sleep(2000);
         }
     }
 }

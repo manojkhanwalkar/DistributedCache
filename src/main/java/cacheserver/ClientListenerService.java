@@ -16,55 +16,31 @@ public class ClientListenerService implements Service {
 
     String name ;
 
+    SocketListener listener ;
+
+    int port;
+
+    public int getPort() {
+        return port;
+    }
+
+    public void setPort(int port) {
+        this.port = port;
+    }
 
     @Override
     public void init() {
 
-        Thread t = new Thread(()->{
+        listener = new SocketListener();
+        listener.init(port);
 
-
-            try {
-                ServerSocket listener = new ServerSocket(10003);
-                try {
-                        Socket socket = listener.accept();
-                        try {
-
-                            BufferedReader input =
-                                    new BufferedReader(new InputStreamReader(socket.getInputStream()));
-                            PrintWriter out =
-                                    new PrintWriter(socket.getOutputStream(), true);
-
-                            while (true) {
-                                String  s = input.readLine();
-                                System.out.println(s);
-                                if (s==null)
-                                    break;
-
-                                out.println(new Date().toString());
-                            }
-                        } finally {
-                            socket.close();
-                        }
-
-                }
-                finally {
-                    listener.close();
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-
-        });
-
-        t.start();
 
 }
 
     @Override
     public void destroy() {
 
-
+        listener.destroy();
 
 
     }
