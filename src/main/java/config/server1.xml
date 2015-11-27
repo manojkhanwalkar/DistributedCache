@@ -19,7 +19,7 @@
 
 
 
-    <bean id="RestService" class="cacheserver.ClientListenerService">
+    <bean id="ClientListenerService" class="cacheserver.ClientListenerService">
         <property name="name" value="RestService" />
 
     </bean>
