@@ -1,5 +1,10 @@
 package data;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.io.IOException;
+
 /**
  * Created by mkhanwalkar on 11/26/15.
  */
@@ -50,4 +55,6 @@ public class Request {
     public void setVersion(int version) {
         this.version = version;
     }
+
+
 }
