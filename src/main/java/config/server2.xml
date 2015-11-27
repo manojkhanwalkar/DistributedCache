@@ -11,6 +11,7 @@
         <property name="listServices">
             <list>
                 <ref bean="ClientListenerService" />
+                <ref bean="CacheService" />
             </list>
         </property>
 
@@ -24,6 +25,12 @@
         <property name="port" value="10004" />
 
     </bean>
+
+    <bean id="CacheService" class="cacheserver.CacheService">
+        <property name="name" value="CacheService" />
+
+    </bean>
+
 
 
 </beans>
