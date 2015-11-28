@@ -2,11 +2,9 @@ package cacheserver;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import sun.misc.Cache;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.util.UUID;
 
 /**
@@ -28,18 +26,63 @@ public class PersistenceManager {
 
     static         ObjectMapper mapper = new ObjectMapper();
 
-    public void init()
-    {
+    CacheService cacheService;
 
+    public void init(CacheService cacheService)
+    {
+        this.cacheService = cacheService;
+        recoverData();
+        initCurrentFile();
+
+    }
+
+    private void recoverData()
+    {
+        // .............list file
+        File directory = new File(dirName);
+
+        // get all the files from a directory
+        File[] fList = directory.listFiles();
+
+        for (File file : fList) {
+            if (file.isFile()) {
+                recoverData(file);
+            }
+        }
+    }
+
+    private void recoverData(File file)
+    {
+        try {
+            FileReader reader = new FileReader(file);
+            BufferedReader bReader = new BufferedReader(reader);
+            while (true)
+            {
+                String s =  bReader.readLine();
+                if (s!=null) {
+                    DataContainer dc = mapper.readValue(s,DataContainer.class);
+                    cacheService.recover(dc.getKey(),dc.getValue());
+                }
+                else
+                    break ;
+            }
+
+            bReader.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void initCurrentFile()
+    {
         FileWriter fw = null;
         String fileName = UUID.randomUUID().toString();
         try {
             fw = new FileWriter(dirName+fileName);
-             bw = new BufferedWriter(fw);
+            bw = new BufferedWriter(fw);
         } catch (Exception e) {
             e.printStackTrace();
         }
-
 
     }
 
@@ -117,6 +160,11 @@ class DataContainer
     public DataContainer(String key, String value) {
         this.key = key ;
         this.value = value ;
+
+    }
+
+    public DataContainer()
+    {
 
     }
 }

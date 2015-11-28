@@ -23,6 +23,12 @@ public class CacheService implements Service {
         this.manager = manager;
     }
 
+    public void recover(String key, String value)
+    {
+        keyValueData.put(key,value);
+
+    }
+
     public void update(String key , String value)
     {
         keyValueData.put(key,value);
@@ -40,7 +46,8 @@ public class CacheService implements Service {
     @Override
     public void init() {
 
-            manager.init();
+            manager.init(this);
+        System.out.println(keyValueData);
 
 }
 
