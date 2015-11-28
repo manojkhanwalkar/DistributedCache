@@ -28,5 +28,20 @@ public class ClientTester {
 
             Thread.sleep(2000);
         }
+
+        for (int i=0;i<10;i++)
+        {
+            Request request = new Request();
+            request.setKey("Hello"+i);
+          // request.setValue("World");
+            request.setType(Type.Query);
+
+            Response response = client.update(request);
+
+            System.out.println(JSONUtil.getJSONString(response));
+
+            Thread.sleep(2000);
+        }
+
     }
 }

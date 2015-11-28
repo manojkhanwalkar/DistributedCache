@@ -4,6 +4,7 @@ import data.JSONUtil;
 import data.Request;
 import data.Response;
 import data.Type;
+import server.Server;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -83,10 +84,23 @@ class ClientHandler implements Runnable
                     Request request = JSONUtil.getRequestFromJSONString(s);
 
                     Response response = new Response();
-                    response.setType(Type.UpdateResult);
-                    response.setRequestId(request.getId());
                     response.setKey(request.getKey());
-                    response.setValue(request.getValue());
+                    response.setRequestId(request.getId());
+                    CacheService cacheService = (CacheService)Server.getService("CacheService");
+                    switch(request.getType())
+                    {
+                        case Update:
+                            response.setType(Type.UpdateResult);
+                            cacheService.update(request.getKey(),request.getValue());
+                            break;
+                        case Query:
+                            response.setType(Type.QueryResult);
+                            String s1 = cacheService.query(request.getKey());
+                            response.setValue(s1);
+                            break ;
+
+
+                    }
 
 
                      out.println(JSONUtil.getJSONString(response));

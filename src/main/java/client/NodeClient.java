@@ -18,10 +18,7 @@ public class NodeClient {
 
     public Response update(Request request)
     {
-
-            String answer = sendNRecv(JSONUtil.getJSONString(request));
-            Response response = JSONUtil.getResponseFromJSONString(answer);
-           return response ;
+        return process(request);
     }
 
     private synchronized String sendNRecv(String s)
@@ -38,9 +35,17 @@ public class NodeClient {
 
     }
 
+    private Response process(Request request)
+    {
+        String answer = sendNRecv(JSONUtil.getJSONString(request));
+        Response response = JSONUtil.getResponseFromJSONString(answer);
+        return response ;
+
+    }
+
     public Response query(Request request)
     {
-        return null ;
+        return process(request);
     }
 
 
