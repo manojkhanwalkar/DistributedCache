@@ -23,9 +23,13 @@ public class CacheService implements Service {
         return keyValueData.get(key);
     }
 
+    //TODO - Add persistence manager for file here as dependency . Async write to the file using executor .
+
 
     @Override
     public void init() {
+
+        // TODO - recover state from file here
 
 
 }
@@ -33,7 +37,8 @@ public class CacheService implements Service {
     @Override
     public void destroy() {
 
-
+        System.out.println("In cache service destroy ");
+        //TODO - close and flush file here
 
     }
 
