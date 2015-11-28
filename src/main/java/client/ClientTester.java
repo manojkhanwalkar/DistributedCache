@@ -26,7 +26,7 @@ public class ClientTester {
 
             System.out.println(JSONUtil.getJSONString(response));
 
-            Thread.sleep(2000);
+        //    Thread.sleep(2000);
         }
 
         for (int i=0;i<10;i++)
@@ -40,7 +40,7 @@ public class ClientTester {
 
             System.out.println(JSONUtil.getJSONString(response));
 
-            Thread.sleep(2000);
+           // Thread.sleep(2000);
         }
 
     }

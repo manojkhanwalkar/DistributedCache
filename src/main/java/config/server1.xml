@@ -28,9 +28,14 @@
 
     <bean id="CacheService" class="cacheserver.CacheService">
         <property name="name" value="CacheService" />
+        <property name="manager" ref ="Manager" />
 
     </bean>
 
+    <bean id="Manager" class="cacheserver.PersistenceManager">
+        <property name="dirName" value="/tmp/data/server1/" />
+
+    </bean>
 
 </beans>
 

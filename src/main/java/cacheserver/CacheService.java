@@ -13,9 +13,20 @@ public class CacheService implements Service {
 
     ConcurrentMap<String,String> keyValueData = new ConcurrentHashMap<>();
 
+    PersistenceManager manager ;
+
+    public PersistenceManager getManager() {
+        return manager;
+    }
+
+    public void setManager(PersistenceManager manager) {
+        this.manager = manager;
+    }
+
     public void update(String key , String value)
     {
         keyValueData.put(key,value);
+        manager.write(key,value);
     }
 
     public String query(String key)
@@ -29,8 +40,7 @@ public class CacheService implements Service {
     @Override
     public void init() {
 
-        // TODO - recover state from file here
-
+            manager.init();
 
 }
 
@@ -38,7 +48,7 @@ public class CacheService implements Service {
     public void destroy() {
 
         System.out.println("In cache service destroy ");
-        //TODO - close and flush file here
+        manager.destroy();
 
     }
 
