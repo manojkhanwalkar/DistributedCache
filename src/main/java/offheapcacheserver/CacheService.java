@@ -39,8 +39,7 @@ public class CacheService implements Service {
     {
 
         DataLocator dl =  keyValueData.get(key);
-        // get value from the file
-        return null ;
+        return manager.read(dl);
     }
 
 

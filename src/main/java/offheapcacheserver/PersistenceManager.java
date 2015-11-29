@@ -75,7 +75,7 @@ public class PersistenceManager {
             e.printStackTrace();
         }*/
 
-        // TODO - need to create DL and not DC in the recovery .
+
         //TODO - need a method to read the data for a given key
         //TODO - unmap method needed
         //TODO - map a new file when old one full is needed .
@@ -136,6 +136,24 @@ public class PersistenceManager {
     public void destroy()
     {
 
+    }
+
+    public synchronized String read(DataLocator dl)
+    {
+        RandomAccessFile file = dl.getFile();
+        try {
+            file.seek(dl.getFilePos());
+            int len = file.readInt();
+            byte[] b = new byte[len];
+            file.read(b);
+            String s = new String(b);
+            DataContainer dc = mapper.readValue(s, DataContainer.class);
+            return dc.getValue();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null ;
+        }
     }
 
 
