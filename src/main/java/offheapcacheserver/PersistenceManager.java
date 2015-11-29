@@ -77,6 +77,8 @@ public class PersistenceManager {
 
         // TODO - need to create DL and not DC in the recovery .
         //TODO - need a method to read the data for a given key
+        //TODO - unmap method needed
+        //TODO - map a new file when old one full is needed .
         try {
             RandomAccessFile raf = new RandomAccessFile(file, "r");
             int len ;
