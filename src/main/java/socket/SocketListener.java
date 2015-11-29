@@ -1,4 +1,4 @@
-package offheapcacheserver;
+package socket;
 
 import cache.CacheService;
 import data.JSONUtil;

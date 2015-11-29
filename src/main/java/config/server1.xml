@@ -20,7 +20,7 @@
 
 
 
-    <bean id="ClientListenerService" class="offheapcacheserver.ClientListenerService">
+    <bean id="ClientListenerService" class="socket.ClientListenerService">
         <property name="name" value="RestService" />
         <property name="port" value="10003" />
 
