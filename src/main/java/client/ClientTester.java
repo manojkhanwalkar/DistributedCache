@@ -18,7 +18,7 @@ public class ClientTester {
         for (int i=0;i<10;i++)
         {
             Request request = new Request();
-            request.setKey("Hello"+i);
+            request.setKey("Hello"+i+i);
             request.setValue("World");
             request.setType(Type.Update);
 
@@ -32,7 +32,7 @@ public class ClientTester {
         for (int i=0;i<10;i++)
         {
             Request request = new Request();
-            request.setKey("Hello"+i);
+            request.setKey("Hello"+i+i);
           // request.setValue("World");
             request.setType(Type.Query);
 

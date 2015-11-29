@@ -6,6 +6,9 @@ import sun.misc.Cache;
 
 import java.io.*;
 import java.util.UUID;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by mkhanwalkar on 11/28/15.
@@ -28,20 +31,21 @@ public class PersistenceManager {
 
     CacheService cacheService;
 
+    ExecutorService service = Executors.newFixedThreadPool(1);
+
     public void init(CacheService cacheService)
     {
         this.cacheService = cacheService;
         recoverData();
         initCurrentFile();
 
+
     }
 
     private void recoverData()
     {
-        // .............list file
         File directory = new File(dirName);
 
-        // get all the files from a directory
         File[] fList = directory.listFiles();
 
         for (File file : fList) {
@@ -88,18 +92,22 @@ public class PersistenceManager {
 
     public void destroy()
     {
+        service.shutdown();
         try {
+            service.awaitTermination(1, TimeUnit.HOURS);
             bw.flush();
             bw.close();
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     // design an iterator to give to the application to keep reading records till there are none .
 
-    public void write(String key , String value)
+    public void write(final String key , final String value)
     {
+
+        service.submit(()->{
         DataContainer dc = new DataContainer(key,value);
 
         try {
@@ -109,31 +117,12 @@ public class PersistenceManager {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        });
     }
 
 
 
-    /*
-       ObjectMapper mapper = new ObjectMapper();
-
-        FileWriter fw = new FileWriter("/tmp/t.json");
-        BufferedWriter bw = new BufferedWriter(fw);
-
-        for (int i=0;i<10;i++)
-        {
-            Request request = new Request();
-            request.setKey("Hello"+i);
-            request.setValue("World");
-            request.setType(Type.Update);
-
-            bw.write(JSONUtil.getJSONString(request));
-            bw.newLine();
-
-
-        }
-
-
-     */
 }
 
 class DataContainer
