@@ -111,7 +111,7 @@ public class PersistenceManager {
     }
 
     RandomAccessFile raf = null;
-    long length =  0x8FFFFFF;
+    long length =  500;
     MappedByteBuffer out = null;
 
     public long getLength() {
@@ -167,7 +167,6 @@ public class PersistenceManager {
     {
 
         //TODO - will change if a new map is required .
-        //TODO - needs proper sync
 
         DataContainer dc = new DataContainer(key,value);
 
@@ -177,6 +176,9 @@ public class PersistenceManager {
 
             if (out.remaining()<bytes.length+4)
             {
+
+                destroyBuffer(out);
+                initCurrentFile();
                 System.out.println("Mapping new file ");
             }
 
