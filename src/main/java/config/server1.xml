@@ -32,7 +32,7 @@
 
     </bean>
 
-    <bean id="Manager" class="offheapcacheserver.PersistenceManager">
+    <bean id="Manager" class="offheapcacheserver.PersistenceManagerImpl">
         <property name="dirName" value="/tmp/data/server1/" />
 
     </bean>

@@ -32,7 +32,7 @@
 
     </bean>
 
-    <bean id="Manager" class="cacheserver.PersistenceManager">
+    <bean id="Manager" class="cacheserver.PersistenceManagerImpl">
         <property name="dirName" value="/tmp/data/server2/" />
 
     </bean>

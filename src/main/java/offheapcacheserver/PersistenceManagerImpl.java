@@ -3,6 +3,7 @@ package offheapcacheserver;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import data.DataContainer;
 import data.DataLocator;
+import persistence.PersistenceManager;
 
 import java.io.*;
 import java.lang.reflect.Field;
@@ -16,7 +17,7 @@ import java.util.UUID;
 /**
  * Created by mkhanwalkar on 11/28/15.
  */
-public class PersistenceManager {
+public class PersistenceManagerImpl implements PersistenceManager{
 
     String dirName ;
 
@@ -57,29 +58,9 @@ public class PersistenceManager {
 
     private void recoverData(File file)
     {
- /*       try {
-            FileReader reader = new FileReader(file);
-            BufferedReader bReader = new BufferedReader(reader);
-            while (true)
-            {
-                String s =  bReader.readLine();
-                if (s!=null) {
-                    DataContainer dc = mapper.readValue(s, DataContainer.class);
-                    cacheService.recover(dc.getKey(),dc.getValue());
-                }
-                else
-                    break ;
-            }
-
-            bReader.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }*/
 
 
 
-        //TODO - unmap method needed
-        //TODO - map a new file when old one full is needed .
         try {
             RandomAccessFile raf = new RandomAccessFile(file, "r");
             int len ;

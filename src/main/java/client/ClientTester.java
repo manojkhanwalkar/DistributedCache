@@ -15,10 +15,10 @@ public class ClientTester {
      //   DCClient client = DCClient.getInstance("localhost:100001,localhost:1002,localhost:1003");
         DCClient client = DCClient.getInstance("localhost:10003,localhost:10004");
 
-  /*     for (int i=0;i<10000;i++)
+       for (int i=0;i<10;i++)
         {
             Request request = new Request();
-            request.setKey("Hello"+i+i);
+            request.setKey("Hello"+i);
             request.setValue("World");
             request.setType(Type.Update);
 
@@ -27,7 +27,7 @@ public class ClientTester {
             System.out.println(JSONUtil.getJSONString(response));
 
            //Thread.sleep(1000);
-        }*/
+        }
 
        for (int i=0;i<10;i++)
         {

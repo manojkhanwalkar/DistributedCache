@@ -2,6 +2,7 @@ package cacheserver;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import persistence.PersistenceManager;
 import sun.misc.Cache;
 
 import java.io.*;
@@ -14,7 +15,7 @@ import data.*;
 /**
  * Created by mkhanwalkar on 11/28/15.
  */
-public class PersistenceManager {
+public class PersistenceManagerImpl  implements PersistenceManager {
 
     String dirName ;
 
@@ -105,7 +106,7 @@ public class PersistenceManager {
 
     // design an iterator to give to the application to keep reading records till there are none .
 
-    public void write(final String key , final String value)
+    public DataLocator write(final String key , final String value)
     {
 
         service.submit(()->{
@@ -120,6 +121,7 @@ public class PersistenceManager {
         }
 
         });
+        return null;
     }
 
 
