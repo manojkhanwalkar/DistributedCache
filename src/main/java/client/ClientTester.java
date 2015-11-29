@@ -29,7 +29,7 @@ public class ClientTester {
         //    Thread.sleep(2000);
         }
 
-        for (int i=0;i<10;i++)
+   /*     for (int i=0;i<10;i++)
         {
             Request request = new Request();
             request.setKey("Hello"+i+i);
@@ -41,7 +41,7 @@ public class ClientTester {
             System.out.println(JSONUtil.getJSONString(response));
 
            // Thread.sleep(2000);
-        }
+        }*/
 
     }
 }

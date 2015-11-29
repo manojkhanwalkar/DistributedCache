@@ -1,8 +1,12 @@
 package offheapcacheserver;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import data.JSONUtil;
 
 import java.io.*;
+import java.nio.MappedByteBuffer;
+import java.nio.channels.FileChannel;
+import java.nio.charset.Charset;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -23,7 +27,6 @@ public class PersistenceManager {
         this.dirName = dirName;
     }
 
-    BufferedWriter bw ;
 
     static         ObjectMapper mapper = new ObjectMapper();
 
@@ -32,7 +35,7 @@ public class PersistenceManager {
     public void init(CacheService cacheService)
     {
         this.cacheService = cacheService;
-     //   recoverData();
+        recoverData();
         initCurrentFile();
 
 
@@ -53,7 +56,7 @@ public class PersistenceManager {
 
     private void recoverData(File file)
     {
-        try {
+ /*       try {
             FileReader reader = new FileReader(file);
             BufferedReader bReader = new BufferedReader(reader);
             while (true)
@@ -70,16 +73,53 @@ public class PersistenceManager {
             bReader.close();
         } catch (IOException e) {
             e.printStackTrace();
+        }*/
+
+        // TODO - need to create DL and not DC in the recovery .
+        //TODO - need a method to read the data for a given key
+        try {
+            RandomAccessFile raf = new RandomAccessFile(file, "r");
+            int len ;
+            while ((  len = raf.readInt())!=0)
+            {
+                byte[] b = new byte[len];
+                raf.read(b);
+
+                String s = new String(b);
+                System.out.println(s);
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+
+
+
+
+    }
+
+    RandomAccessFile raf = null;
+    long length =  0x8FFFFFF;
+    MappedByteBuffer out = null;
+
+    public long getLength() {
+        return length;
+    }
+
+    public void setLength(long length) {
+        this.length = length;
     }
 
     private void initCurrentFile()
     {
-        FileWriter fw = null;
+
         String fileName = UUID.randomUUID().toString();
         try {
-            fw = new FileWriter(dirName+fileName);
-            bw = new BufferedWriter(fw);
+
+               out = new RandomAccessFile(dirName+fileName, "rw")
+                    .getChannel().map(FileChannel.MapMode.READ_WRITE, 0, length);
+
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -89,28 +129,30 @@ public class PersistenceManager {
     public void destroy()
     {
 
-        try {
-
-            bw.flush();
-            bw.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
 
-    public DataLocator write(final String key , final String value)
+    public synchronized DataLocator write(final String key , final String value)
     {
 
+        //TODO - will change if a new map is required .
+        //TODO - needs proper sync
         DataLocator dl = new DataLocator();
+
+        dl.setFile(raf);
+        dl.setFilePos(out.position());
 
         DataContainer dc = new DataContainer(key,value);
 
         try {
             String s = mapper.writeValueAsString(dc);
-            bw.write(s);
-            bw.newLine();
-        } catch (Exception e) {
+              byte[] bytes = s.getBytes(Charset.forName("US-ASCII"));
+
+                out.putInt(bytes.length);
+                out.put(bytes);
+
+                out.force();
+               } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -125,16 +167,24 @@ public class PersistenceManager {
 
 class DataLocator
 {
-    // file handle
+    RandomAccessFile file ;
 
-    long filePos ;
+    int filePos ;
 
-    public long getFilePos() {
+    public int getFilePos() {
         return filePos;
     }
 
-    public void setFilePos(long filePos) {
+    public void setFilePos(int filePos) {
         this.filePos = filePos;
+    }
+
+    public RandomAccessFile getFile() {
+        return file;
+    }
+
+    public void setFile(RandomAccessFile file) {
+        this.file = file;
     }
 }
 
