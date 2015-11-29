@@ -23,8 +23,24 @@ public class DCClient {
     {
         int node = Math.abs(request.getKey().hashCode()%clusterSize);
         NodeClient client = clients.get(node);
-        return client.update(request);
+        try {
+            return client.update(request);
+        } catch (Exception e)
+        {
+            System.out.println("Primary node not found , trying secondary");
+            NodeClient secclient = getSecondaryNode(node);
+            return secclient.update(request);
+        }
 
+    }
+
+    private NodeClient getSecondaryNode(int primary)
+    {
+        primary++;
+        if (primary==clusterSize)
+            primary = 0;
+
+        return clients.get(primary);
     }
 
     public Response query(Request request)
