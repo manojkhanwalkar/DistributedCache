@@ -1,5 +1,6 @@
 package offheapcacheserver;
 
+import data.DataLocator;
 import server.Service;
 
 import java.util.concurrent.ConcurrentHashMap;
@@ -11,7 +12,7 @@ public class CacheService implements Service {
 
     String name ;
 
-    ConcurrentMap<String,DataLocator> keyValueData = new ConcurrentHashMap<>();
+    ConcurrentMap<String, DataLocator> keyValueData = new ConcurrentHashMap<>();
 
     PersistenceManager manager ;
 

@@ -1,21 +1,17 @@
 package offheapcacheserver;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import data.JSONUtil;
+import data.DataContainer;
+import data.DataLocator;
 
 import java.io.*;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.Buffer;
-import java.nio.ByteBuffer;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
 import java.util.UUID;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Created by mkhanwalkar on 11/28/15.
@@ -225,58 +221,3 @@ public class PersistenceManager {
 
 }
 
-class DataLocator
-{
-    RandomAccessFile file ;
-
-    int filePos ;
-
-    public int getFilePos() {
-        return filePos;
-    }
-
-    public void setFilePos(int filePos) {
-        this.filePos = filePos;
-    }
-
-    public RandomAccessFile getFile() {
-        return file;
-    }
-
-    public void setFile(RandomAccessFile file) {
-        this.file = file;
-    }
-}
-
-class DataContainer
-{
-    String key ;
-    String value ;
-
-    public String getKey() {
-        return key;
-    }
-
-    public void setKey(String key) {
-        this.key = key;
-    }
-
-    public String getValue() {
-        return value;
-    }
-
-    public void setValue(String value) {
-        this.value = value;
-    }
-
-    public DataContainer(String key, String value) {
-        this.key = key ;
-        this.value = value ;
-
-    }
-
-    public DataContainer()
-    {
-
-    }
-}
