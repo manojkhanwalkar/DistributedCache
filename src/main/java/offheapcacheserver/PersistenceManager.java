@@ -82,13 +82,18 @@ public class PersistenceManager {
         try {
             RandomAccessFile raf = new RandomAccessFile(file, "r");
             int len ;
+
             while ((  len = raf.readInt())!=0)
             {
+                DataLocator dl = new DataLocator();
+                dl.setFile(raf);
+                dl.setFilePos((int)(raf.getFilePointer()-4));
                 byte[] b = new byte[len];
                 raf.read(b);
-
                 String s = new String(b);
-                System.out.println(s);
+                DataContainer dc = mapper.readValue(s, DataContainer.class);
+                cacheService.recover(dc.getKey(),dl);
+
             }
 
         } catch (IOException e) {

@@ -23,9 +23,9 @@ public class CacheService implements Service {
         this.manager = manager;
     }
 
-    public void recover(String key, String value)
+    public void recover(String key, DataLocator dl)
     {
-//        keyValueData.put(key,value);
+        keyValueData.put(key,dl);
 
     }
 
