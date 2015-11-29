@@ -4,6 +4,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import data.JSONUtil;
 
 import java.io.*;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.nio.Buffer;
+import java.nio.ByteBuffer;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
@@ -76,7 +81,7 @@ public class PersistenceManager {
         }*/
 
 
-        //TODO - need a method to read the data for a given key
+
         //TODO - unmap method needed
         //TODO - map a new file when old one full is needed .
         try {
@@ -123,8 +128,9 @@ public class PersistenceManager {
         String fileName = UUID.randomUUID().toString();
         try {
 
-               out = new RandomAccessFile(dirName+fileName, "rw")
-                    .getChannel().map(FileChannel.MapMode.READ_WRITE, 0, length);
+               raf = new RandomAccessFile(dirName+fileName, "rw");
+
+               out = raf.getChannel().map(FileChannel.MapMode.READ_WRITE, 0, length);
 
 
         } catch (Exception e) {
@@ -162,28 +168,55 @@ public class PersistenceManager {
 
         //TODO - will change if a new map is required .
         //TODO - needs proper sync
-        DataLocator dl = new DataLocator();
-
-        dl.setFile(raf);
-        dl.setFilePos(out.position());
 
         DataContainer dc = new DataContainer(key,value);
 
         try {
             String s = mapper.writeValueAsString(dc);
-              byte[] bytes = s.getBytes(Charset.forName("US-ASCII"));
+            byte[] bytes = s.getBytes(Charset.forName("US-ASCII"));
 
-                out.putInt(bytes.length);
+            if (out.remaining()<bytes.length+4)
+            {
+                System.out.println("Mapping new file ");
+            }
+
+            DataLocator dl = new DataLocator();
+            dl.setFile(raf);
+            dl.setFilePos(out.position());
+            out.putInt(bytes.length);
                 out.put(bytes);
 
                 out.force();
+            return dl ;
+
                } catch (Exception e) {
             e.printStackTrace();
+            return null;
         }
 
-        return dl;
 
 
+    }
+
+    public static void destroyBuffer(Buffer buffer) {
+        if(buffer.isDirect()) {
+            try {
+                if(!buffer.getClass().getName().equals("java.nio.DirectByteBuffer")) {
+                    Field attField = buffer.getClass().getDeclaredField("att");
+                    attField.setAccessible(true);
+                    buffer = (Buffer) attField.get(buffer);
+                }
+
+                Method cleanerMethod = buffer.getClass().getMethod("cleaner");
+                cleanerMethod.setAccessible(true);
+                Object cleaner = cleanerMethod.invoke(buffer);
+                Method cleanMethod = cleaner.getClass().getMethod("clean");
+                cleanMethod.setAccessible(true);
+                cleanMethod.invoke(cleaner);
+            } catch(Exception e) {
+                throw new RuntimeException("Could not destroy direct buffer " + buffer, e);
+            }
+        }
     }
 
 
