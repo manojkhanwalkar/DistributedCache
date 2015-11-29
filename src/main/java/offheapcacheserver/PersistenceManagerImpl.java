@@ -32,9 +32,9 @@ public class PersistenceManagerImpl implements PersistenceManager{
 
     static         ObjectMapper mapper = new ObjectMapper();
 
-    CacheService cacheService;
+    CacheServiceImpl cacheService;
 
-    public void init(CacheService cacheService)
+    public void init(CacheServiceImpl cacheService)
     {
         this.cacheService = cacheService;
         recoverData();

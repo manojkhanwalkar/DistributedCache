@@ -1,6 +1,6 @@
 package persistence;
 
-import cacheserver.CacheService;
+import cacheserver.CacheServiceImpl;
 import data.DataLocator;
 
 /**
@@ -12,12 +12,12 @@ public interface PersistenceManager {
 
     public void destroy();
 
-    public default void init(CacheService service)
+    public default void init(CacheServiceImpl service)
     {
 
     }
 
-    public default void init(offheapcacheserver.CacheService service)
+    public default void init(offheapcacheserver.CacheServiceImpl service)
     {
 
     }

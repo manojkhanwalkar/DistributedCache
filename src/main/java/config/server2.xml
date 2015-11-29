@@ -26,7 +26,7 @@
 
     </bean>
 
-    <bean id="CacheService" class="cacheserver.CacheService">
+    <bean id="CacheService" class="cacheserver.CacheServiceImpl">
         <property name="name" value="CacheService" />
         <property name="manager" ref="Manager" />
 

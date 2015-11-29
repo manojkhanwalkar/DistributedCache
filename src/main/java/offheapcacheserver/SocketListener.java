@@ -1,5 +1,6 @@
 package offheapcacheserver;
 
+import cache.CacheService;
 import data.JSONUtil;
 import data.Request;
 import data.Response;

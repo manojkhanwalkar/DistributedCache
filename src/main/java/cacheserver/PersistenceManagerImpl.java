@@ -1,9 +1,7 @@
 package cacheserver;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import persistence.PersistenceManager;
-import sun.misc.Cache;
 
 import java.io.*;
 import java.util.UUID;
@@ -31,11 +29,11 @@ public class PersistenceManagerImpl  implements PersistenceManager {
 
     static         ObjectMapper mapper = new ObjectMapper();
 
-    CacheService cacheService;
+    CacheServiceImpl cacheService;
 
     ExecutorService service = Executors.newFixedThreadPool(1);
 
-    public void init(CacheService cacheService)
+    public void init(CacheServiceImpl cacheService)
     {
         this.cacheService = cacheService;
         recoverData();

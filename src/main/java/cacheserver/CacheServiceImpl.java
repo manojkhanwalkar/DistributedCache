@@ -1,19 +1,19 @@
-package offheapcacheserver;
+package cacheserver;
 
-import data.DataLocator;
+import cache.CacheService;
 import persistence.PersistenceManager;
 import server.Service;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-public class CacheService implements Service {
+public class CacheServiceImpl implements Service , CacheService {
 
 
 
     String name ;
 
-    ConcurrentMap<String, DataLocator> keyValueData = new ConcurrentHashMap<>();
+    ConcurrentMap<String,String> keyValueData = new ConcurrentHashMap<>();
 
     PersistenceManager manager ;
 
@@ -25,23 +25,21 @@ public class CacheService implements Service {
         this.manager = manager;
     }
 
-    public void recover(String key, DataLocator dl)
+    public void recover(String key, String value)
     {
-        keyValueData.put(key,dl);
+        keyValueData.put(key,value);
 
     }
 
     public void update(String key , String value)
     {
-        DataLocator dl = manager.write(key, value);
-        keyValueData.put(key,dl);
+        keyValueData.put(key,value);
+        manager.write(key,value);
     }
 
     public String query(String key)
     {
-
-        DataLocator dl =  keyValueData.get(key);
-        return manager.read(dl);
+        return keyValueData.get(key);
     }
 
 
@@ -57,7 +55,7 @@ public class CacheService implements Service {
     @Override
     public void destroy() {
 
-        System.out.println("In off heap cache service destroy ");
+        System.out.println("In cache service destroy ");
         manager.destroy();
 
     }
