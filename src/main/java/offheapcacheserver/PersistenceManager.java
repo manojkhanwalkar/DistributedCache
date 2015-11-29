@@ -29,12 +29,10 @@ public class PersistenceManager {
 
     CacheService cacheService;
 
-    ExecutorService service = Executors.newFixedThreadPool(1);
-
     public void init(CacheService cacheService)
     {
         this.cacheService = cacheService;
-        recoverData();
+     //   recoverData();
         initCurrentFile();
 
 
@@ -90,9 +88,9 @@ public class PersistenceManager {
 
     public void destroy()
     {
-        service.shutdown();
+
         try {
-            service.awaitTermination(1, TimeUnit.HOURS);
+
             bw.flush();
             bw.close();
         } catch (Exception e) {
@@ -100,12 +98,12 @@ public class PersistenceManager {
         }
     }
 
-    // design an iterator to give to the application to keep reading records till there are none .
 
-    public void write(final String key , final String value)
+    public DataLocator write(final String key , final String value)
     {
 
-        service.submit(()->{
+        DataLocator dl = new DataLocator();
+
         DataContainer dc = new DataContainer(key,value);
 
         try {
@@ -116,11 +114,28 @@ public class PersistenceManager {
             e.printStackTrace();
         }
 
-        });
+        return dl;
+
+
     }
 
 
 
+}
+
+class DataLocator
+{
+    // file handle
+
+    long filePos ;
+
+    public long getFilePos() {
+        return filePos;
+    }
+
+    public void setFilePos(long filePos) {
+        this.filePos = filePos;
+    }
 }
 
 class DataContainer

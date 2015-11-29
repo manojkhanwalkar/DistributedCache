@@ -11,7 +11,7 @@ public class CacheService implements Service {
 
     String name ;
 
-    ConcurrentMap<String,String> keyValueData = new ConcurrentHashMap<>();
+    ConcurrentMap<String,DataLocator> keyValueData = new ConcurrentHashMap<>();
 
     PersistenceManager manager ;
 
@@ -25,19 +25,22 @@ public class CacheService implements Service {
 
     public void recover(String key, String value)
     {
-        keyValueData.put(key,value);
+//        keyValueData.put(key,value);
 
     }
 
     public void update(String key , String value)
     {
-        keyValueData.put(key,value);
-        manager.write(key,value);
+        DataLocator dl = manager.write(key, value);
+        keyValueData.put(key,dl);
     }
 
     public String query(String key)
     {
-        return keyValueData.get(key);
+
+        DataLocator dl =  keyValueData.get(key);
+        // get value from the file
+        return null ;
     }
 
 
