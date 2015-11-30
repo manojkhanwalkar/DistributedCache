@@ -23,6 +23,8 @@
     <bean id="ClientListenerService" class="socket.ClientListenerService">
         <property name="name" value="RestService" />
         <property name="port" value="10004" />
+        <property name="handlerType" value="handler.ClientHandler" />
+
 
     </bean>
 

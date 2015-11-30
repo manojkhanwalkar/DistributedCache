@@ -21,11 +21,22 @@ public class ClientListenerService implements Service {
         this.port = port;
     }
 
+    String handlerType ;
+
+    public String getHandlerType() {
+        return handlerType;
+    }
+
+    public void setHandlerType(String handlerType) {
+        this.handlerType = handlerType;
+    }
+
     @Override
     public void init() {
 
         listener = new SocketListener();
         listener.init(port);
+        listener.setHandlerType(handlerType);
 
 
 }
