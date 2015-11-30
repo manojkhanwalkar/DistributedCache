@@ -3,7 +3,7 @@ package socket;
 import server.Service;
 import socket.SocketListener;
 
-public class ClientListenerService implements Service {
+public class ListenerService implements Service {
 
 
 
