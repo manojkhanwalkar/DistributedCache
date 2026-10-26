@@ -45,19 +45,14 @@ public class Server {
     }
 
     public void init() {
-        try {
-            context = new FileSystemXmlApplicationContext(config);
-            list = (ServiceList) context.getBean("ServiceList");
+        // Fail fast: a service that cannot initialise (port in use, unusable data
+        // directory) must stop the server rather than leave it half started.
+        context = new FileSystemXmlApplicationContext(config);
+        list = (ServiceList) context.getBean("ServiceList");
 
-
-            for (Service s : list.getServices()) {
-                s.init();
-            }
-        } catch (Exception e) {
-
-            e.printStackTrace();
+        for (Service s : list.getServices()) {
+            s.init();
         }
-
     }
 
     public void start() {
@@ -69,6 +64,8 @@ public class Server {
 
     public void stop() {
    //     log.info("Stopping Services");
+        if (list == null)
+            return;
 
         for (Service s : list.getServices()) {
             s.stop();
@@ -90,6 +87,8 @@ public class Server {
 
     public void destroy() {
 
+        if (list == null)
+            return;
         List<Service> services = new ArrayList<Service>(list.getServices());
 
         for (int i = services.size() - 1; i >= 0; i--) {

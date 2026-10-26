@@ -23,6 +23,38 @@ public class ListenerService implements Service {
 
     String handlerType ;
 
+    // Interface to listen on. Defaults to loopback; set to a specific interface
+    // address (or 0.0.0.0) only on a trusted network - the protocol has no authentication.
+    String bindAddress = SocketListener.DEFAULT_BIND_ADDRESS;
+
+    int maxConnections = SocketListener.DEFAULT_MAX_CONNECTIONS;
+
+    int readTimeoutMillis = SocketListener.DEFAULT_READ_TIMEOUT_MILLIS;
+
+    public String getBindAddress() {
+        return bindAddress;
+    }
+
+    public void setBindAddress(String bindAddress) {
+        this.bindAddress = bindAddress;
+    }
+
+    public int getMaxConnections() {
+        return maxConnections;
+    }
+
+    public void setMaxConnections(int maxConnections) {
+        this.maxConnections = maxConnections;
+    }
+
+    public int getReadTimeoutMillis() {
+        return readTimeoutMillis;
+    }
+
+    public void setReadTimeoutMillis(int readTimeoutMillis) {
+        this.readTimeoutMillis = readTimeoutMillis;
+    }
+
     public String getHandlerType() {
         return handlerType;
     }
@@ -35,8 +67,11 @@ public class ListenerService implements Service {
     public void init() {
 
         listener = new SocketListener();
-        listener.init(port);
         listener.setHandlerType(handlerType);
+        listener.setBindAddress(bindAddress);
+        listener.setMaxConnections(maxConnections);
+        listener.setReadTimeoutMillis(readTimeoutMillis);
+        listener.init(port);
 
 
 }
@@ -44,7 +79,8 @@ public class ListenerService implements Service {
     @Override
     public void destroy() {
 
-        listener.destroy();
+        if (listener != null)
+            listener.destroy();
 
 
     }

@@ -24,6 +24,11 @@
         <property name="name" value="RestService" />
         <property name="port" value="10004" />
         <property name="handlerType" value="handler.ClientHandler" />
+        <!-- The protocol is unauthenticated and unencrypted: keep it on loopback, or bind
+             to a private interface address on a trusted network only. -->
+        <property name="bindAddress" value="127.0.0.1" />
+        <property name="maxConnections" value="100" />
+        <property name="readTimeoutMillis" value="300000" />
 
 
     </bean>

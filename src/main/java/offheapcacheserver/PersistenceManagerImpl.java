@@ -3,6 +3,7 @@ package offheapcacheserver;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import data.DataContainer;
 import data.DataLocator;
+import persistence.DataDirectory;
 import persistence.PersistenceManager;
 
 import java.io.*;
@@ -11,7 +12,7 @@ import java.lang.reflect.Method;
 import java.nio.Buffer;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
 /**
@@ -34,9 +35,16 @@ public class PersistenceManagerImpl implements PersistenceManager{
 
     CacheServiceImpl cacheService;
 
+    File dataDir ;
+
     public void init(CacheServiceImpl cacheService)
     {
         this.cacheService = cacheService;
+        try {
+            dataDir = DataDirectory.prepare(dirName);
+        } catch (IOException e) {
+            throw new IllegalStateException("Cannot use data directory " + dirName, e);
+        }
         recoverData();
         initCurrentFile();
 
@@ -45,14 +53,8 @@ public class PersistenceManagerImpl implements PersistenceManager{
 
     private void recoverData()
     {
-        File directory = new File(dirName);
-
-        File[] fList = directory.listFiles();
-
-        for (File file : fList) {
-            if (file.isFile()) {
-                recoverData(file);
-            }
+        for (File file : DataDirectory.dataFiles(dataDir)) {
+            recoverData(file);
         }
     }
 
@@ -67,19 +69,25 @@ public class PersistenceManagerImpl implements PersistenceManager{
 
             while ((  len = raf.readInt())!=0)
             {
+                // a record can never be larger than what is left of the mapped file
+                if (len < 0 || len > raf.length() - raf.getFilePointer())
+                    throw new IOException("Corrupt record length " + len + " in " + file);
                 DataLocator dl = new DataLocator();
                 dl.setFile(raf);
                 dl.setFilePos((int)(raf.getFilePointer()-4));
                 byte[] b = new byte[len];
-                raf.read(b);
-                String s = new String(b);
+                raf.readFully(b);
+                String s = new String(b, StandardCharsets.US_ASCII);
                 DataContainer dc = mapper.readValue(s, DataContainer.class);
-                cacheService.recover(dc.getKey(),dl);
+                if (dc.getKey() != null)
+                    cacheService.recover(dc.getKey(),dl);
 
             }
 
+        } catch (EOFException e) {
+            // end of a completely filled file
         } catch (IOException e) {
-            e.printStackTrace();
+            System.err.println("Could not recover data from " + file + ": " + e.getMessage());
         }
 
 
@@ -105,13 +113,13 @@ public class PersistenceManagerImpl implements PersistenceManager{
         String fileName = UUID.randomUUID().toString();
         try {
 
-               raf = new RandomAccessFile(dirName+fileName, "rw");
+               raf = new RandomAccessFile(DataDirectory.createDataFile(dataDir, fileName), "rw");
 
                out = raf.getChannel().map(FileChannel.MapMode.READ_WRITE, 0, length);
 
 
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (IOException e) {
+            throw new IllegalStateException("Cannot create data file in " + dataDir, e);
         }
 
     }
@@ -123,13 +131,17 @@ public class PersistenceManagerImpl implements PersistenceManager{
 
     public synchronized String read(DataLocator dl)
     {
+        if (dl == null)
+            return null;
         RandomAccessFile file = dl.getFile();
         try {
             file.seek(dl.getFilePos());
             int len = file.readInt();
+            if (len < 0 || len > file.length() - file.getFilePointer())
+                throw new IOException("Corrupt record length " + len);
             byte[] b = new byte[len];
-            file.read(b);
-            String s = new String(b);
+            file.readFully(b);
+            String s = new String(b, StandardCharsets.US_ASCII);
             DataContainer dc = mapper.readValue(s, DataContainer.class);
             return dc.getValue();
 
@@ -149,7 +161,13 @@ public class PersistenceManagerImpl implements PersistenceManager{
 
         try {
             String s = mapper.writeValueAsString(dc);
-            byte[] bytes = s.getBytes(Charset.forName("US-ASCII"));
+            byte[] bytes = s.getBytes(StandardCharsets.US_ASCII);
+
+            // A record that cannot fit even in an empty file must be rejected up front;
+            // otherwise every such request would map (and leak) a new file and then fail.
+            if (bytes.length + 4L > length)
+                throw new IllegalArgumentException("Record of " + bytes.length
+                        + " bytes exceeds the maximum of " + (length - 4) + " bytes");
 
             if (out.remaining()<bytes.length+4)
             {
@@ -168,9 +186,8 @@ public class PersistenceManagerImpl implements PersistenceManager{
                 out.force();
             return dl ;
 
-               } catch (Exception e) {
-            e.printStackTrace();
-            return null;
+               } catch (IOException e) {
+            throw new UncheckedIOException(e);
         }
 
 
@@ -193,7 +210,8 @@ public class PersistenceManagerImpl implements PersistenceManager{
                 cleanMethod.setAccessible(true);
                 cleanMethod.invoke(cleaner);
             } catch(Exception e) {
-                throw new RuntimeException("Could not destroy direct buffer " + buffer, e);
+                // Best effort only: on JDK 9+ the cleaner is not reflectively accessible and the
+                // mapping is released when the buffer is garbage collected.
             }
         }
     }
