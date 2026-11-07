@@ -48,7 +48,7 @@ public class CacheServiceImpl implements Service , CacheService {
     public void init() {
 
             manager.init(this);
-        System.out.println(keyValueData);
+        System.out.println("Recovered " + keyValueData.size() + " keys");
 
 }
 

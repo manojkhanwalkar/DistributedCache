@@ -1,6 +1,7 @@
 package cacheserver;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import persistence.DataDirectory;
 import persistence.PersistenceManager;
 
 import java.io.*;
@@ -33,9 +34,16 @@ public class PersistenceManagerImpl  implements PersistenceManager {
 
     ExecutorService service = Executors.newFixedThreadPool(1);
 
+    File dataDir ;
+
     public void init(CacheServiceImpl cacheService)
     {
         this.cacheService = cacheService;
+        try {
+            dataDir = DataDirectory.prepare(dirName);
+        } catch (IOException e) {
+            throw new IllegalStateException("Cannot use data directory " + dirName, e);
+        }
         recoverData();
         initCurrentFile();
 
@@ -44,36 +52,27 @@ public class PersistenceManagerImpl  implements PersistenceManager {
 
     private void recoverData()
     {
-        File directory = new File(dirName);
-
-        File[] fList = directory.listFiles();
-
-        for (File file : fList) {
-            if (file.isFile()) {
-                recoverData(file);
-            }
+        for (File file : DataDirectory.dataFiles(dataDir)) {
+            recoverData(file);
         }
     }
 
     private void recoverData(File file)
     {
-        try {
-            FileReader reader = new FileReader(file);
-            BufferedReader bReader = new BufferedReader(reader);
+        try (BufferedReader bReader = new BufferedReader(new FileReader(file))) {
             while (true)
             {
                 String s =  bReader.readLine();
                 if (s!=null) {
                     DataContainer dc = mapper.readValue(s,DataContainer.class);
-                    cacheService.recover(dc.getKey(),dc.getValue());
+                    if (dc.getKey() != null && dc.getValue() != null)
+                        cacheService.recover(dc.getKey(),dc.getValue());
                 }
                 else
                     break ;
             }
-
-            bReader.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            System.err.println("Could not recover data from " + file + ": " + e.getMessage());
         }
     }
 
@@ -82,10 +81,10 @@ public class PersistenceManagerImpl  implements PersistenceManager {
         FileWriter fw = null;
         String fileName = UUID.randomUUID().toString();
         try {
-            fw = new FileWriter(dirName+fileName);
+            fw = new FileWriter(DataDirectory.createDataFile(dataDir, fileName));
             bw = new BufferedWriter(fw);
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (IOException e) {
+            throw new IllegalStateException("Cannot create data file in " + dataDir, e);
         }
 
     }
